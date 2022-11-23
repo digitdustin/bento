@@ -9,17 +9,39 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Transition, Menu } from "@headlessui/react";
 import { Reorder } from "framer-motion";
-import { Fragment, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { motion } from "framer-motion";
 import TwitterModal from "../components/ComponentModals/TwitterModal";
 import Grid from "../components/grid";
+import TwitterStyle1 from "../components/Blocks/Twitter/TwitterStyle1";
+import TwitterStyle2 from "../components/Blocks/Twitter/TwitterStyle2";
 
 export default function Home() {
   const [socialOpen, setSocialOpen] = useState(false);
+  const [blocks, setBlocks] = useState<React.ReactNode[]>([]);
+
+  const insertTwitterBlock = (
+    blockStyle: number,
+    username: string,
+    tweetContent: string
+  ) => {
+    if (blockStyle === 0) {
+      setBlocks((prev) => [
+        ...prev,
+        <TwitterStyle1 username={username} tweetContent={tweetContent} />,
+      ]);
+    } else if (blockStyle === 1) {
+      setBlocks((prev) => [...prev, <TwitterStyle2 username={username} />]);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen bg-slate-100 flex flex-col items-center justify-start">
-      <TwitterModal isOpen={socialOpen} onClose={() => setSocialOpen(false)} />
+      <TwitterModal
+        isOpen={socialOpen}
+        onClose={() => setSocialOpen(false)}
+        onInsert={insertTwitterBlock}
+      />
       <div className="max-w-4xl w-full h-screen flex flex-col items-center justify-center space-y-4">
         <h1 className="text-6xl font-bold text-slate-900">🍱</h1>
         <h1 className="text-2xl font-bold text-slate-600 text-center">
@@ -47,7 +69,7 @@ export default function Home() {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Items className="z-10 absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="px-1 py-1 ">
                 <Menu.Item>
                   {({ active }) => (
@@ -133,8 +155,8 @@ export default function Home() {
             </Menu.Items>
           </Transition>
         </Menu>
+        {blocks}
       </div>
-      
     </div>
   );
 }

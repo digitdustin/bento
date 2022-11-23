@@ -1,13 +1,25 @@
 import { Dialog, Transition } from "@headlessui/react";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
+import Twitter1 from "assets/previews/Twitter1.png";
+import Twitter2 from "assets/previews/Twitter2.png";
 
 const TwitterModal = ({
   isOpen,
   onClose,
+  onInsert,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  onInsert: (
+    blockStyle: number,
+    username: string,
+    tweetContent: string
+  ) => void;
 }) => {
+  const [blockStyle, setBlockStyle] = useState<number>(0);
+  const [username, setUsername] = useState<string>("");
+  const [tweetContent, setTweetContent] = useState<string>("");
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -53,10 +65,39 @@ const TwitterModal = ({
                     Block Style
                   </label>
                   <div className="mt-1">
-                    <div className="w-full overflow-x-scroll space-x-4 flex">
-                        <div className="aspect-video rounded-md h-32 cursor-pointer hover:border-blue-500 transition border-2 border-gray-200"></div>
-                        <div className="aspect-video rounded-md h-32 cursor-pointer hover:border-blue-500 transition border-2 border-gray-200"></div>
-                        <div className="aspect-video rounded-md h-32 cursor-pointer hover:border-blue-500 transition border-2 border-gray-200"></div>
+                    <div className="w-full space-x-4 flex">
+                      <div
+                        onClick={() => setBlockStyle(0)}
+                        className={`w-full relative overflow-hidden rounded-md flex justify-center py-4 h-auto cursor-pointer group hover:border-blue-500 transition border-2 bg-slate-700 ${
+                          blockStyle === 0
+                            ? "border-blue-500"
+                            : "border-gray-200"
+                        }`}
+                      >
+                        <img
+                          src={Twitter1.src}
+                          alt="Twitter1"
+                          className={`w-8/12 shadow-xl group-hover:scale-105 transition ${
+                            blockStyle === 0 ? "scale-105" : "scale-100"
+                          }`}
+                        />
+                      </div>
+                      <div
+                        onClick={() => setBlockStyle(1)}
+                        className={`w-full relative overflow-hidden rounded-md flex justify-center py-4 h-auto cursor-pointer group hover:border-blue-500 transition border-2 bg-slate-700 ${
+                          blockStyle === 1
+                            ? "border-blue-500"
+                            : "border-gray-200"
+                        }`}
+                      >
+                        <img
+                          src={Twitter2.src}
+                          alt="Twitter1"
+                          className={`w-8/12 shadow-xl group-hover:scale-105 transition ${
+                            blockStyle === 1 ? "scale-105" : "scale-100"
+                          }`}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -70,6 +111,8 @@ const TwitterModal = ({
                   </label>
                   <div className="mt-1">
                     <input
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       type="text"
                       name="username"
                       id="username"
@@ -79,37 +122,44 @@ const TwitterModal = ({
                   </div>
                 </div>
                 {/* Tweet content */}
-                <div className="mt-4">
-                  <label
-                    htmlFor="tweet-content"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Tweet Content
-                  </label>
-                  <div className="mt-1">
-                    <textarea
-                      name="tweet-content"
-                      id="tweet-content"
-                      placeholder="Covfefe"
-                      className="shadow-sm focus:!outline-none block w-full sm:text-sm px-4 py-3 bg-gray-200 border-gray-300 rounded-md"
-                    />
+                {blockStyle === 0 ? (
+                  <div className="mt-4">
+                    <label
+                      htmlFor="tweet-content"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Tweet Content
+                    </label>
+                    <div className="mt-1">
+                      <textarea
+                        value={tweetContent}
+                        onChange={(e) => setTweetContent(e.target.value)}
+                        name="tweet-content"
+                        id="tweet-content"
+                        placeholder="Covfefe"
+                        className="shadow-sm focus:!outline-none block w-full sm:text-sm px-4 py-3 bg-gray-200 border-gray-300 rounded-md"
+                      />
+                    </div>
                   </div>
-                </div>
-                
-                
+                ) : (
+                  <></>
+                )}
 
                 <div className="mt-4 w-full flex justify-end space-x-4">
                   <button
                     type="button"
                     className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     onClick={onClose}
-                    >
+                  >
                     Cancel
                   </button>
                   <button
                     type="button"
                     className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={onClose}
+                    onClick={() => {
+                      onClose();
+                      onInsert(blockStyle, username, tweetContent);
+                    }}
                   >
                     Insert Box
                   </button>
